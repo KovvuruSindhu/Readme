@@ -1,0 +1,47 @@
+# recipe_finder_simple.py
+# Author: Kovvuru Sindhu
+# Purpose: Find recipes by ingredient using TheMealDB API (no web frameworks used)
+
+import requests
+
+def find_recipes(ingredient):
+    """Fetch recipes from TheMealDB API using the given ingredient."""
+    url = f"https://www.themealdb.com/api/json/v1/1/filter.php?i={ingredient}"
+    
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Check if request was successful
+        data = response.json()
+
+        # If meals exist in the response
+        if data["meals"]:
+            print(f"\n🍽 Recipes you can make with '{ingredient}':\n")
+            for meal in data["meals"]:
+                print(f"Meal Name: {meal['strMeal']}")
+                print(f"Recipe Link: https://www.themealdb.com/meal.php?c={meal['idMeal']}")
+                print("-" * 40)
+        else:
+            print(f"\n❌ No recipes found for '{ingredient}'. Try another ingredient.")
+    except requests.exceptions.RequestException as e:
+        print(f"\n⚠️ Network error: {e}")
+    except Exception as e:
+        print(f"\n⚠️ Unexpected error: {e}")
+
+def main():
+    """Main program loop."""
+    print("🍳 Welcome to Taylor's Recipe Finder 🍳")
+    print("Find meal ideas using ingredients you already have!")
+    
+    while True:
+        ingredient = input("\nEnter an ingredient (or type 'exit' to quit): ").strip().lower()
+        if ingredient == "exit":
+            print("\n👋 Thanks for using Taylor's Recipe Finder! Goodbye.")
+            break
+        elif ingredient == "":
+            print("⚠️ Please enter a valid ingredient.")
+        else:
+            find_recipes(ingredient)
+
+# Run the program
+if __name__ == "__main__":
+    main()
